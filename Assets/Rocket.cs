@@ -10,15 +10,15 @@ public class Rocket : MonoBehaviour {
     [SerializeField] float mainThrust = 20f;
     Rigidbody rigidBody;
     AudioSource audioSource;
-    enum State { Alive, Dying, Trascending }
-    State state = State.Alive;
+    enum State { ALIVE, DEAD, TRANSCENDING }
+    State state = State.ALIVE;
     void Start () {
         rigidBody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
 	}
 	
 	void Update () {
-        if (state == State.Alive) //if dead => stop sound
+        if (state == State.ALIVE) //if dead => stop sound
         {
             Thrust();
             Rotate();
@@ -27,7 +27,7 @@ public class Rocket : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(state != State.Alive)
+        if(state != State.ALIVE)
         {
             return;
         }
@@ -37,11 +37,11 @@ public class Rocket : MonoBehaviour {
                 print("Friendly");
                 break;
             case "Finish":
-                state = State.Trascending;
+                state = State.TRANSCENDING;
                 Invoke("LoadNextLevel", 1f);
                 break;
             default:
-                state = State.Dying;
+                state = State.DEAD;
                 ReloadLevel();
                 break;
 
@@ -51,14 +51,28 @@ public class Rocket : MonoBehaviour {
 
     private  void ReloadLevel()
     {
-        SceneManager.LoadScene(0); //current
-        state = State.Alive;
+        Scene scene = SceneManager.GetActiveScene();
+        print(scene.name);
+        SceneManager.LoadScene(scene.name); //current
+        
+        state = State.ALIVE;
     }
 
     private void LoadNextLevel()
     {
-        SceneManager.LoadScene(1); //next
-        state = State.Alive;
+        Scene scene = SceneManager.GetActiveScene();
+        print(scene.name);
+        int currentSceneIndex = scene.buildIndex;
+        if (currentSceneIndex == SceneManager.sceneCount)
+        {
+            print("Good job");
+            currentSceneIndex = 0;
+        } else
+        {
+            currentSceneIndex++;
+        }
+        SceneManager.LoadScene(currentSceneIndex); //next
+        state = State.ALIVE;
     }
 
     private void Rotate()
