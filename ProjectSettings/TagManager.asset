@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Fuel
   - Friendly
+  - Delayed
   layers:
   - Default
   - TransparentFX
